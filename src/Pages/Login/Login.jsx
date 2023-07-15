@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import { useNavigate, Link } from "react-router-dom";
 import SendingLoader from "../../Components/SendingLoader/SendingLoader";
+import { url } from "../../url";
 
 const Login = () => {
   const navigate = new useNavigate();
@@ -18,7 +19,7 @@ const Login = () => {
     setSending(true);
 
     try {
-      const res = await axios.post("/api/auth/post-login", {
+      const res = await axios.post(url + "/api/auth/post-login", {
         email: email,
         password: password,
       });

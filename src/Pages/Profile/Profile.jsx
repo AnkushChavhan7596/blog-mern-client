@@ -13,7 +13,8 @@ import { useActiveUserContext } from "../../hooks/useActiveUserContext";
 import { format } from "timeago.js";
 import PageLoader from "../PageLoader/PageLoader";
 import { useDispatch, useSelector } from "react-redux";
-import {CURRENT_POST} from "../../redux/postsSlice";
+import { CURRENT_POST } from "../../redux/postsSlice";
+import { url } from "../../url";
 
 const Profile = () => {
   const { id } = useParams();
@@ -25,14 +26,14 @@ const Profile = () => {
   const [postAuthor, setPostAuthor] = useState();
   const [profileImage, setProfileImage] = useState();
 
-  const posts = useSelector((state)=> state.post.posts);
+  const posts = useSelector((state) => state.post.posts);
 
   // handle delete post
   const handleDelete = async (id) => {
     console.log(id);
 
     try {
-      const res = await axios.delete(`/api/posts/delete-post/${id}`);
+      const res = await axios.delete(url + `/api/posts/delete-post/${id}`);
 
       if (res.status === 200) {
         console.log(res.data);
@@ -53,11 +54,15 @@ const Profile = () => {
     formdata.append("profileImage", profileImage);
 
     axios
-      .patch(`/api/auth/update-profile-image/${postAuthor?._id}`, formdata, {
-        headers: {
-          "Content-type": "multipart/form-data",
-        },
-      })
+      .patch(
+        url + `/api/auth/update-profile-image/${postAuthor?._id}`,
+        formdata,
+        {
+          headers: {
+            "Content-type": "multipart/form-data",
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           console.log("Profile Updated successfully");
@@ -73,13 +78,13 @@ const Profile = () => {
   };
 
   const handleCurrentPost = (currentId) => {
-    postDispatch(CURRENT_POST(currentId)) 
-  }
+    postDispatch(CURRENT_POST(currentId));
+  };
 
   useEffect(() => {
     const fetchPostUser = async () => {
       try {
-        const res = await axios.get(`/api/auth/user/${id}`);
+        const res = await axios.get(url + `/api/auth/user/${id}`);
 
         if (res.status === 200) {
           setPostAuthor(res.data.user);
@@ -96,121 +101,122 @@ const Profile = () => {
 
   return (
     <>
-    {
-    postAuthor ?
-   
-    <div className="profile_user">
-      <div className="profile_main_wrapper">
-        <div className="top">
-          <div className="left">
-            <div className="profile_name font_wt_500">
-              <p>{postAuthor?.name}</p>
-            </div>
+      {postAuthor ? (
+        <div className="profile_user">
+          <div className="profile_main_wrapper">
+            <div className="top">
+              <div className="left">
+                <div className="profile_name font_wt_500">
+                  <p>{postAuthor?.name}</p>
+                </div>
 
-            <div className="profile_email font_wt_500">
-              <p>{postAuthor?.email}</p>
-            </div>
+                <div className="profile_email font_wt_500">
+                  <p>{postAuthor?.email}</p>
+                </div>
 
-            <div className="joined_data font_wt_500">
-              <p>Joined On : {format(postAuthor?.createdAt)}</p>
-            </div>
+                <div className="joined_data font_wt_500">
+                  <p>Joined On : {format(postAuthor?.createdAt)}</p>
+                </div>
 
-            <div className="total_blogs font_wt_500">
-              <p>
-                Total Blogs :{" "}
-                {
-                  posts?.filter((post) => post?.authorId === postAuthor?._id)
-                    .length
-                }
-              </p>
-            </div>
-          </div>
-
-          <div className="right">
-            <div className="image_wrapper">
-              <img
-                src={postAuthor?.profileImage}
-                className="profile_user_profile_image"
-                alt="profile  image"
-              />
-            </div>
-            {activeUser?._id === postAuthor?._id ? (
-              <div className="change_image_wrapper">
-                <form encType="multipart/form-data" onSubmit={handleSumbit}>
-                  <input
-                    type="file"
-                    onChange={(e) => setProfileImage(e.target.files[0])}
-                    className="profile_input"
-                  />
-
-                  <div className="profile_submit_wrapper">
-                    <button type="submit" className="profile_submit">
-                      Change
-                    </button>
-                  </div>
-                </form>
+                <div className="total_blogs font_wt_500">
+                  <p>
+                    Total Blogs :{" "}
+                    {
+                      posts?.filter(
+                        (post) => post?.authorId === postAuthor?._id
+                      ).length
+                    }
+                  </p>
+                </div>
               </div>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
-        <div className="bottom">
-          <div>
-            <h4>All Blogs</h4>
-          </div>
 
-          <div className="blog_post_profile_wrapper">
-            {posts
-              ?.filter((post) => post?.authorId === id)
-              ?.map((post) => {
-                return (
-                  <div className="blog_profile_post" key={post?._id}>
-                    <img src={post?.postImage} alt="" />
+              <div className="right">
+                <div className="image_wrapper">
+                  <img
+                    src={postAuthor?.profileImage}
+                    className="profile_user_profile_image"
+                    alt="profile  image"
+                  />
+                </div>
+                {activeUser?._id === postAuthor?._id ? (
+                  <div className="change_image_wrapper">
+                    <form encType="multipart/form-data" onSubmit={handleSumbit}>
+                      <input
+                        type="file"
+                        onChange={(e) => setProfileImage(e.target.files[0])}
+                        className="profile_input"
+                      />
 
-                    <div className="mid__title">
-                      <h3>{post?.title}</h3>
-                    </div>
-
-                    {activeUser?._id === postAuthor?._id ? (
-                      <div className="bottom">
-                        <span>
-                          <DeleteIcon
-                            className="clr"
-                            onClick={() => handleDelete(post?._id)}
-                          />
-                        </span>
-                        <span>
-                          <Link to={`/update-post/${post?._id}`}>
-                            <EditIcon className="clr" />
-                          </Link>
-                        </span>
-                        <span>
-                          <Link to={`/post/${post?._id}`}>
-                            <RemoveRedEyeIcon className="clr" />
-                          </Link>
-                        </span>
+                      <div className="profile_submit_wrapper">
+                        <button type="submit" className="profile_submit">
+                          Change
+                        </button>
                       </div>
-                    ) : (
-                      <div className="bottom">
-                        <span>
-                          <Link to={`/post/${post?._id}`} onClick={() => handleCurrentPost(post._id)}>
-                            <RemoveRedEyeIcon className="clr" />
-                          </Link>
-                        </span>
-                      </div>
-                    )}
+                    </form>
                   </div>
-                );
-              })}
+                ) : (
+                  ""
+                )}
+              </div>
+            </div>
+            <div className="bottom">
+              <div>
+                <h4>All Blogs</h4>
+              </div>
+
+              <div className="blog_post_profile_wrapper">
+                {posts
+                  ?.filter((post) => post?.authorId === id)
+                  ?.map((post) => {
+                    return (
+                      <div className="blog_profile_post" key={post?._id}>
+                        <img src={post?.postImage} alt="" />
+
+                        <div className="mid__title">
+                          <h3>{post?.title}</h3>
+                        </div>
+
+                        {activeUser?._id === postAuthor?._id ? (
+                          <div className="bottom">
+                            <span>
+                              <DeleteIcon
+                                className="clr"
+                                onClick={() => handleDelete(post?._id)}
+                              />
+                            </span>
+                            <span>
+                              <Link to={`/update-post/${post?._id}`}>
+                                <EditIcon className="clr" />
+                              </Link>
+                            </span>
+                            <span>
+                              <Link to={`/post/${post?._id}`}>
+                                <RemoveRedEyeIcon className="clr" />
+                              </Link>
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="bottom">
+                            <span>
+                              <Link
+                                to={`/post/${post?._id}`}
+                                onClick={() => handleCurrentPost(post._id)}
+                              >
+                                <RemoveRedEyeIcon className="clr" />
+                              </Link>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    :
-    <PageLoader />
-            }
+      ) : (
+        <PageLoader />
+      )}
     </>
   );
 };

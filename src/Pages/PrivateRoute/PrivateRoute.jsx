@@ -41,9 +41,6 @@
 //     navigate("/login", {replace : true});
 //   }
 
-
-
-
 //   return (
 //     <div>
 //       { userVerified ? <Outlet /> : navigate("/login", {replace : true})}
@@ -55,18 +52,19 @@
 
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useNavigate, Outlet } from "react-router-dom";
+import { url } from "../../url";
 
 const PrivateRoute = () => {
   const [userVerified, setUserVerified] = useState(false);
   const navigate = new useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (Cookies.get("jwt")) {
       axios
-        .post("/api/auth/verify-user", { token: Cookies.get("jwt") })
+        .post(url + "/api/auth/verify-user", { token: Cookies.get("jwt") })
         .then((res) => {
           if (res.status === 200 && res.data.isAuth) {
             setUserVerified(true);
@@ -74,16 +72,16 @@ const PrivateRoute = () => {
           } else {
             setUserVerified(false);
             // Swal("Oops", res.data.msg, "info");
-          navigate("/login", {replace : true})
+            navigate("/login", { replace: true });
           }
         });
     } else {
       setUserVerified(false);
       // Swal("Oops", "Login First", "info");
       console.log("User is not Genuine");
-      navigate("/login", {replace : true})
+      navigate("/login", { replace: true });
     }
-  },[])
+  }, []);
 
   return (
     <div>

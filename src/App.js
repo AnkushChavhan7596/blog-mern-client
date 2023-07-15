@@ -19,6 +19,8 @@ import UpdatePost from "./Pages/UpdatePost/UpdatePost";
 import PageNotFound from "./Pages/PageNotFound/PageNotFound";
 import {useDispatch,useSelector} from "react-redux";
 import { SET_POSTS } from "./redux/postsSlice";
+import { url } from "./url";
+
 
 // contexts
 
@@ -27,7 +29,7 @@ function App() {
 
    const fetchAllPosts = async () =>{
       try{
-         const res = await axios.get("/api/posts/posts");
+         const res = await axios.get(url+"/api/posts/posts");
 
          if(res.status === 200){
            console.log(res)

@@ -5,15 +5,15 @@ import Swal from "sweetalert2";
 import Loader from "../Loader/Loader";
 import "./UpdatePost.css";
 import { usePostsContext } from "../../hooks/usePostsContext";
+import { url } from "../../url";
 // import CircularLoader from "../../Components/CircularLoader/CircularLoader";
 
 const UpdatePost = () => {
-  const {posts, dispatch} = usePostsContext();
+  const { posts, dispatch } = usePostsContext();
   const [post, setPost] = useState({});
 
   const { id } = useParams();
   console.log(id);
-
 
   const navigate = new useNavigate();
 
@@ -36,7 +36,7 @@ const UpdatePost = () => {
     formdata.append("blogImage", blogImage);
 
     axios
-      .patch(`/api/posts/update-post/${id}`, formdata, {
+      .patch(url + `/api/posts/update-post/${id}`, formdata, {
         headers: {
           "Content-type": "multipart/form-data",
         },
@@ -45,7 +45,7 @@ const UpdatePost = () => {
         if (res.status === 200) {
           console.log(res.data.post);
           Swal.fire("Greate", res.data.msg, "success");
-          dispatch({type : "UPDATE_POST", payload : res.data.post})
+          dispatch({ type: "UPDATE_POST", payload: res.data.post });
 
           // setPosting(false);
           navigate("/", { replace: true });
@@ -66,13 +66,13 @@ const UpdatePost = () => {
 
   // useEffect(() => {
 
-  //  const tempPost = posts ? 
+  //  const tempPost = posts ?
   //  posts.map((post)=>{
   //        if(post._id === id)
   //        {
   //         return post;
   //        }
-        
+
   //  })
   //  :
   //  ""
@@ -82,31 +82,33 @@ const UpdatePost = () => {
 
   // }, [])
 
-  const loadPost = async () =>{
-    try{
-       const res = await axios.get(`http://localhost:8000/api/posts/post/${id}`);
+  const loadPost = async () => {
+    try {
+      const res = await axios.get(url + `/api/posts/post/${id}`);
 
-       if(res.status === 200){
-          setTitle(res.data.post.title);
-          setDescription(res.data.post.description);
-          setCategory(res.data.post.category);
-       }
-       else{
+      if (res.status === 200) {
+        setTitle(res.data.post.title);
+        setDescription(res.data.post.description);
+        setCategory(res.data.post.category);
+      } else {
         console.log("Something wents wrong");
-       }
-    }
-    catch(error){
+      }
+    } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
-  useEffect(()=>{
-      loadPost();
-  },[])
+  useEffect(() => {
+    loadPost();
+  }, []);
 
   return (
     <div className="create_post_container">
-      <form encType="multipart/form-data" className="createPostForm" onSubmit={handleFormSubmit}>
+      <form
+        encType="multipart/form-data"
+        className="createPostForm"
+        onSubmit={handleFormSubmit}
+      >
         <div className="create_post_heading">
           <h2>Update Post</h2>
         </div>
@@ -159,23 +161,20 @@ const UpdatePost = () => {
         </div>
 
         <div className="input_field">
-        <label htmlFor="#">Select post image : </label>
+          <label htmlFor="#">Select post image : </label>
           <input
             type="file"
             onChange={(e) => {
               setBlogImage(e.target.files[0]);
               setPrevImage(URL.createObjectURL(e.target.files[0]));
             }}
-
           />
           <br />
           {/* <img width={200} height={150} src={prevImage} alt="prev image" /> */}
         </div>
 
         <div className="post_btn_wrapper">
-          <button onClick={handlePostingLoading}>
-           Update Blog
-          </button>
+          <button onClick={handlePostingLoading}>Update Blog</button>
           {/* {posting ? <>Posting... <CircularLoader /></> : ""} */}
         </div>
       </form>

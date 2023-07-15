@@ -4,6 +4,7 @@ import Comment from "../Comment/Comment";
 import axios from "axios";
 import { useActiveUserContext } from "../../hooks/useActiveUserContext";
 import { useCommentsContext } from "../../hooks/useCommentsContext";
+import { url } from "../../url";
 
 const Comments = ({ post }) => {
   const { activeUser } = useActiveUserContext();
@@ -17,10 +18,13 @@ const Comments = ({ post }) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(`/api/comments/comment/${activeUser?._id}`, {
-        postId: post._id,
-        comment: comment,
-      });
+      const res = await axios.post(
+        url + `/api/comments/comment/${activeUser?._id}`,
+        {
+          postId: post._id,
+          comment: comment,
+        }
+      );
 
       if (res.status === 200) {
         console.log(res.data.msg);
@@ -71,7 +75,9 @@ const Comments = ({ post }) => {
               ?.filter((comment) => comment.postId === post?._id)
               .reverse()
               .map((comment) => {
-                return <Comment comment={comment} post={post} key={comment._id} />;
+                return (
+                  <Comment comment={comment} post={post} key={comment._id} />
+                );
               })
           ) : (
             <h4 className="no_comment_txt">Being first to post Comment</h4>

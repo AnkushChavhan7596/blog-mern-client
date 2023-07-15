@@ -12,17 +12,18 @@ import Comments from "../../Components/Comments/Comments";
 import { useUsersContext } from "../../hooks/useUsersContext";
 import { useActiveUserContext } from "../../hooks/useActiveUserContext";
 import { useSelector } from "react-redux";
+import { url } from "../../url";
 
 const SinglePost = () => {
   const { dispatch } = usePostsContext();
   const posts = useSelector((state) => state.post.posts);
   const { users } = useUsersContext();
   const { activeUser } = useActiveUserContext();
-  
-  const {id} = useParams();
+
+  const { id } = useParams();
   // const location = useLocation();
   // const id = location.pathname.split("/")[2];
-  
+
   const [currentPost, setCurrentPost] = useState();
   const [postAuthor, setPostAuthor] = useState();
   const [likeCount, setLikeCount] = useState(0);
@@ -32,14 +33,12 @@ const SinglePost = () => {
 
   const currentBlogPost = useSelector((state) => state.post.currentPost);
 
-
   // handle delete post
   const handleDelete = async (id) => {
-
     console.log(id);
 
     try {
-      const res = await axios.delete(`/api/posts/delete-post/${id}`);
+      const res = await axios.delete(url + `/api/posts/delete-post/${id}`);
 
       if (res.status === 200) {
         console.log(res.data);
@@ -78,7 +77,7 @@ const SinglePost = () => {
     console.log(postId);
 
     try {
-      const res = await axios.post(`/api/posts/like-dislike/${postId}`, {
+      const res = await axios.post(url + `/api/posts/like-dislike/${postId}`, {
         userId: activeUser?._id,
       });
 
@@ -94,12 +93,10 @@ const SinglePost = () => {
   };
 
   useEffect(() => {
-
     // fetch current post
     const fetchCurrentPost = async () => {
       try {
-
-        const res = await axios.get(`/api/posts/post/${id}`);
+        const res = await axios.get(url + `/api/posts/post/${id}`);
 
         if (res.status === 200) {
           console.log(res.data.post);
@@ -116,8 +113,6 @@ const SinglePost = () => {
           // const userRespone = await axios.get(`/api/auth/user/${res.data.post.authorId}`);
           // const data = JSON.parse(userRespone);
           // console.log("Auther data " + data)
-
-
         } else {
           console.log("Post not found");
         }
@@ -128,12 +123,13 @@ const SinglePost = () => {
 
     fetchCurrentPost();
   }, [id]);
-  
 
   useEffect(() => {
     const fetchPostUser = async () => {
       try {
-        const res = await axios.get(`/api/auth/user/${currentPost.authorId}`);
+        const res = await axios.get(
+          url + `/api/auth/user/${currentPost.authorId}`
+        );
 
         if (res.status === 200) {
           setPostAuthor(res.data.user);
@@ -146,9 +142,7 @@ const SinglePost = () => {
     };
 
     fetchPostUser();
-  }, [id,currentPost]);
-
-  
+  }, [id, currentPost]);
 
   return (
     <>

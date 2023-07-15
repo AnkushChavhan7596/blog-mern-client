@@ -8,13 +8,13 @@ import SendingLoader from "../../Components/SendingLoader/SendingLoader";
 // import CircularLoader from "../../Components/CircularLoader/CircularLoader";
 import { usePostsContext } from "../../hooks/usePostsContext";
 import { useActiveUserContext } from "../../hooks/useActiveUserContext";
+import { url } from "../../url";
 
 const CreatePost = () => {
-
   const { dispatch } = usePostsContext();
   const { activeUser } = useActiveUserContext();
 
-  console.log(activeUser)
+  console.log(activeUser);
 
   const navigate = new useNavigate();
 
@@ -24,7 +24,7 @@ const CreatePost = () => {
   // const [posting, setPosting] = useState(false);
   let [blogImage, setBlogImage] = useState([]);
   const [prevImage, setPrevImage] = useState([]);
-  const [imageSelected, setImageSelected] = useState(false)
+  const [imageSelected, setImageSelected] = useState(false);
   const [sending, setSending] = useState(false);
 
   // handle form submit
@@ -42,18 +42,16 @@ const CreatePost = () => {
     formdata.append("activeUserId", activeUser._id);
 
     axios
-      .post("/api/posts/create-post", formdata, {
+      .post(url + "/api/posts/create-post", formdata, {
         headers: {
           "Content-type": "multipart/form-data",
         },
       })
       .then((res) => {
         if (res.status === 200) {
-
           setSending(false);
 
-          dispatch({type :"CREATE_POST", payload : res.data.post}); // dispathing the global posts state
-
+          dispatch({ type: "CREATE_POST", payload: res.data.post }); // dispathing the global posts state
 
           Swal.fire("Greate", res.data.msg, "success");
 
@@ -76,7 +74,11 @@ const CreatePost = () => {
 
   return (
     <div className="create_post_container">
-      <form encType="multipart/form-data" className="createPostForm" onSubmit={handleFormSubmit}>
+      <form
+        encType="multipart/form-data"
+        className="createPostForm"
+        onSubmit={handleFormSubmit}
+      >
         <div className="create_post_heading_wrapper">
           <h2 className="create_post_heading">Create Post</h2>
         </div>
@@ -128,7 +130,7 @@ const CreatePost = () => {
         </div>
 
         <div className="input_field">
-        <label htmlFor="#">Select post image : </label>
+          <label htmlFor="#">Select post image : </label>
           <input
             type="file"
             onChange={(e) => {
@@ -136,16 +138,25 @@ const CreatePost = () => {
               setPrevImage(URL.createObjectURL(e.target.files[0]));
               setImageSelected(true);
             }}
-
             required
           />
           <br />
-          {imageSelected ?<img className="prev-image" width={200} height={150} src={prevImage} alt="image preview" /> : ""}
+          {imageSelected ? (
+            <img
+              className="prev-image"
+              width={200}
+              height={150}
+              src={prevImage}
+              alt="image preview"
+            />
+          ) : (
+            ""
+          )}
         </div>
 
         <div className="post_btn_wrapper">
           <button onClick={handlePostingLoading}>
-          { sending ? <SendingLoader /> : "create blog" }
+            {sending ? <SendingLoader /> : "create blog"}
           </button>
         </div>
       </form>

@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
 import SendingLoader from "../../Components/SendingLoader/SendingLoader";
+import { url } from "../../url";
 
 const Register = () => {
   const navigate = new useNavigate();
@@ -20,15 +21,12 @@ const Register = () => {
     setSending(true);
 
     try {
-      const res = await axios.post(
-        "/api/auth/post-register",
-        {
-          name: name,
-          email: email,
-          password: password,
-          cPassword: cPassword,
-        }
-      );
+      const res = await axios.post(url + "/api/auth/post-register", {
+        name: name,
+        email: email,
+        password: password,
+        cPassword: cPassword,
+      });
 
       if (res.status === 200) {
         setSending(false);
@@ -46,11 +44,9 @@ const Register = () => {
   return (
     <div className="register">
       <form onSubmit={handleSubmit}>
-
-             <div className="register_heading_wrapper">
-                <h2 className="register_heading">Register</h2>
-             </div>
-       
+        <div className="register_heading_wrapper">
+          <h2 className="register_heading">Register</h2>
+        </div>
 
         <div className="input_filed">
           <label htmlFor="#">Name : </label>
@@ -97,12 +93,14 @@ const Register = () => {
         </div>
 
         <div className="register_button_container">
-          <button type="submit">Register</button> 
-          { sending ? <SendingLoader /> : "" }
+          <button type="submit">Register</button>
+          {sending ? <SendingLoader /> : ""}
         </div>
 
         <div className="bottom_form">
-          <p>Already have an account ? <Link to="/login">Sign In</Link></p>
+          <p>
+            Already have an account ? <Link to="/login">Sign In</Link>
+          </p>
         </div>
       </form>
     </div>
